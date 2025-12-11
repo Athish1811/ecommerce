@@ -1,5 +1,6 @@
 from fastapi import FastAPI, Depends, APIRouter, HTTPException
 from sqlalchemy.orm import Session
+from sqlalchemy import text
 from dependencies import get_db
 from models.User import User
 from models.Product import Product
@@ -30,25 +31,37 @@ def add_to_cart(user_id: int, product_id: int, quantity: int = 1, db: Session = 
 
 @cartrouter.get("/view/{user_id}")
 def view_cart(user_id: int, db: Session = Depends(get_db)):
-    results = (
-        db.query(Cart, Product)
-        .join(Product, Cart.product_id == Product.id)
-        .filter(Cart.user_id == user_id)
-        .all()
-    )
-    print(results)
+
+    
+    query = text("""
+        SELECT 
+            cart.id AS cart_id,
+            cart.product_id,
+            cart.quantity,
+            products.id AS prod_id,
+            products.name AS product_name,
+            products.price
+        FROM cart
+        JOIN products
+            ON cart.product_id = products.id
+        WHERE cart.user_id = :user_id
+    """)
+
+    results = db.execute(query, {"user_id": user_id}).fetchall()
+
     if not results:
         return {"message": "Cart is empty"}
 
     cart_items = []
-    for cart_row, product_row in results:
+
+    for row in results:
         cart_items.append({
-            "cart_id": cart_row.id,
-            "product_id": product_row.id,
-            "product_name": product_row.name,
-            "price": product_row.price,
-            "quantity": cart_row.quantity,
-            "total": product_row.price * cart_row.quantity
+            "cart_id": row[0],        # cart.id
+            "product_id": row[1],     # cart.product_id
+            "quantity": row[2],       # cart.quantity
+            "product_name": row[4],   # products.name
+            "price": row[5],          # products.price
+            "total": row[5] * row[2]
         })
 
     return {

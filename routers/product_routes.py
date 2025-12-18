@@ -41,7 +41,7 @@ def update_product(prod_id: int, product_update: ProductCreate, db: Session = De
 
 
 
-# use query parameter to delete user
+
 @productrouter.delete("/")
 def delete_product(prod_id: int, db: Session = Depends(get_db)):
     product = db.query(Product).filter(Product.id == prod_id).first()

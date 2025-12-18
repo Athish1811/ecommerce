@@ -2,7 +2,7 @@ from fastapi import APIRouter,Depends
 from sqlalchemy.orm import Session
 from models.User import User
 from models.Product import Product
-from models.Cart import Cart
+from models.payment import Payment
 from schemas.User import UserCreate,UserUpdate
 from dependencies import get_db
 userrouter = APIRouter(
@@ -37,7 +37,7 @@ def update_user(user_id: int, user_update: UserUpdate, db: Session = Depends(get
         db.refresh(user)
         return {"message":"Update Done",**user}
     return {"message": "User not found"}
-#use query parameter to delete user
+
 @userrouter.delete("/")
 def delete_user(user_id: int, db: Session = Depends(get_db)):
     user = db.query(User).filter(User.id == user_id).first()
@@ -63,5 +63,4 @@ def get_user_cart(user_id: int, db: Session = Depends(get_db)):
             "price": product.price,
             "quantity": cart_item.quantity
         })
-
-    return result
+    return result   

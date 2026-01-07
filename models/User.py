@@ -5,11 +5,11 @@ from db.session import Base
 class User(Base):
     __tablename__ = "users"
 
-    id = Column(Integer, primary_key=True)
+    id = Column(Integer, primary_key=True, index=True)
     username = Column(String, unique=True)
     email = Column(String, unique=True)
     password = Column(String)
 
-    reviews = relationship("Review", back_populates="user")
-    payments = relationship("Payment", back_populates="user")  
-    messages = relationship("Message", back_populates="user")
+    orders = relationship("Order", back_populates="user", cascade="all, delete")
+    reviews = relationship("Review", back_populates="user", cascade="all, delete")
+    messages = relationship("Message", back_populates="user", cascade="all, delete")

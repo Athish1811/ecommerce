@@ -5,7 +5,7 @@ from db.session import Base
 class Inventory(Base):
     __tablename__ = "inventory"
 
-    id = Column(Integer, primary_key=True, index=True)
+    id = Column(Integer, primary_key=True)
     product_id = Column(Integer, ForeignKey("products.id"), unique=True)
     quantity = Column(Integer, default=0)
 

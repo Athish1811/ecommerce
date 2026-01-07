@@ -6,7 +6,7 @@ from db.session import Base
 class Message(Base):
     __tablename__ = "messages"
 
-    id = Column(Integer, primary_key=True, index=True)
+    id = Column(Integer, primary_key=True)
     user_id = Column(Integer, ForeignKey("users.id"))
     title = Column(String)
     content = Column(String)

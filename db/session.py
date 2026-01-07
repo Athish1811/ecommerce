@@ -1,13 +1,26 @@
-from dotenv import load_dotenv
-import os
 from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker,declarative_base
-load_dotenv()
+from sqlalchemy.orm import sessionmaker, declarative_base
 
-engine = create_engine(os.getenv("DATABASE_URL"))
+DATABASE_URL = "sqlite:///./ecommerce.db"
+# or your mysql/postgres url
 
-SessionLocal = sessionmaker(autocommit=False,autoflush=False,bind=engine)
+engine = create_engine(
+    DATABASE_URL,
+    connect_args={"check_same_thread": False}  # sqlite only
+)
+
+SessionLocal = sessionmaker(
+    autocommit=False,
+    autoflush=False,
+    bind=engine
+)
+
 Base = declarative_base()
 
-
-
+# ✅ THIS IS IMPORTANT
+def get_db():
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
